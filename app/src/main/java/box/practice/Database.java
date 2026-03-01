@@ -1,22 +1,22 @@
+
 import java.util.Map;
 import java.util.HashMap;
-import java.lang.Exception;
 
 public class Database {
-    public enum DBStatus {
+    public static enum DBStatus {
         DB_GOOD, 
         DB_NOT_FOUND, 
         DB_ERROR,
     } 
 
-    Map<String, Integer> keyToValue;
-    Map<Integer, Integer> valueToCount;
+    Map<String, String> keyToValue;
+    Map<String, Integer> valueToCount;
 
     public Database () {
         keyToValue = new HashMap<>();
         valueToCount = new HashMap<>();
     }
-    public DBStatus dbSet(String key, int value) {
+    public DBStatus dbSet(String key, String value) {
         if(decOldValue(key) == DBStatus.DB_NOT_FOUND) {
             return DBStatus.DB_NOT_FOUND;
         }
@@ -36,16 +36,20 @@ public class Database {
         return DBStatus.DB_GOOD;
     }
 
-    public int dbGet(String key) {
+    public String dbGet(String key) {
         if(!keyToValue.containsKey(key)) {
-            throw new Exception("key doesn't exists");
-        }
+            throw new RuntimeException("key doesn't exists");
+        } 
 
         return keyToValue.get(key);
     }
 
-    public DBStatus dbNumEqualTo(String key, int value) {
-        return DBStatus.DB_GOOD;
+    public int dbNumEqualTo(String value) {
+        if(!valueToCount.containsKey(value)) {
+            throw new RuntimeException("value doesn't exists");
+        }
+
+        return valueToCount.get(value);
     }
 
     private DBStatus decOldValue(String key) {
@@ -53,11 +57,11 @@ public class Database {
             return DBStatus.DB_NOT_FOUND;
         }
 
-        int val = keyToValue.get(key);
+        String val = keyToValue.get(key);
         int count = valueToCount.get(val);
         count--;
         if(count == 0) {
-            valueToCount.remove(count);
+            valueToCount.remove(val);
         }
         return DBStatus.DB_GOOD;
     }
