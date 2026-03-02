@@ -2,26 +2,29 @@ package box.practice;
 
 import box.practice.Database.DBStatus;
 
-public class CommandNumEqualTo implements Command<String> {
+public class CommandNumEqualTo implements Command<DBStatus> {
     private String key;
-    private Database db;
+    private int res;
 
-    public CommandNumEqualTo(Database db, String key) {
-        this.db = db;
+    public CommandNumEqualTo(String key) {
         this.key = key;
+        this.res = 0;
     }
-    public String executor() {
-        String count = "";
+    public DBStatus executor(Database db) {
         try {
-            count = String.valueOf(db.dbNumEqualTo(key));
-            return count;
+            res = db.dbNumEqualTo(key);
+            return DBStatus.DB_GOOD;
         } catch (RuntimeException e) {
-            return DBStatus.DB_NOT_FOUND.toString();
+            return DBStatus.DB_NOT_FOUND;
         }
     }
 
-    public String undo() {
-        return DBStatus.DB_GOOD.toString();
+    public DBStatus undo(Database db) {
+        return DBStatus.DB_GOOD;
+    }
+
+    public int getResult() {
+        return res;
     }
     
 }

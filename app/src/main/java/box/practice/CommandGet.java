@@ -2,26 +2,29 @@ package box.practice;
 
 import box.practice.Database.DBStatus;
 
-public class CommandGet implements Command<String> {
+public class CommandGet implements Command<DBStatus> {
     private String key;
-    private Database db;
+    private String res;
 
-    public CommandGet(Database db, String key) {
-        this.db = db;
+    public CommandGet(String key) {
         this.key = key;
+        this.res = "";
     }
-    public String executor() {
-        String value = "";
+    public DBStatus executor(Database db) {
         try {
-            value = db.dbGet(key);
-            return value;
+            res = db.dbGet(key);
+            return DBStatus.DB_GOOD;
         } catch (RuntimeException e) {
-            return DBStatus.DB_NOT_FOUND.toString();
+            return DBStatus.DB_NOT_FOUND;
         }
     }
 
-    public String undo() {
-        return DBStatus.DB_GOOD.toString();
+    public DBStatus undo(Database db) {
+        return DBStatus.DB_GOOD;
+    }
+
+    public String getResult() {
+        return this.res;
     }
     
 }

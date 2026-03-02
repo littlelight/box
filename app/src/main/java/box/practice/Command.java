@@ -1,5 +1,5 @@
 package box.practice;
 public interface Command<T> {
-    public T executor();
-    public T undo();
+    public T executor(Database db);
+    public T undo(Database db);
 }
