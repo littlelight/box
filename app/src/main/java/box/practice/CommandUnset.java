@@ -24,6 +24,9 @@ public class CommandUnset implements Command<DBStatus>{
         }
     }
     
+    public String getName() {
+        return "UNSET";
+    }
 }
 
 

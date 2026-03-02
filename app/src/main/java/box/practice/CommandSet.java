@@ -6,10 +6,10 @@ public class CommandSet implements Command<DBStatus> {
     private String key;
     private String value;
     private String oldValue;
-    public CommandSet(String key, String value, String oldValue) {
+    public CommandSet(String key, String value) {
         this.key = key;
         this.value = value;
-        this.oldValue = oldValue == null ? "" : oldValue;
+        this.oldValue = "";
     }
     
     @Override
@@ -25,5 +25,9 @@ public class CommandSet implements Command<DBStatus> {
         } else {
             return db.dbSet(key, oldValue);
         }
+    }
+
+    public String getName() {
+        return "SET";
     }
 }

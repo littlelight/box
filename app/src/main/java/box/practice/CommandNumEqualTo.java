@@ -13,6 +13,7 @@ public class CommandNumEqualTo implements Command<DBStatus> {
     public DBStatus executor(Database db) {
         try {
             res = db.dbNumEqualTo(key);
+            System.out.println("> " + res);
             return DBStatus.DB_GOOD;
         } catch (RuntimeException e) {
             return DBStatus.DB_NOT_FOUND;
@@ -25,6 +26,10 @@ public class CommandNumEqualTo implements Command<DBStatus> {
 
     public int getResult() {
         return res;
+    }
+
+    public String getName() {
+        return "NumEqualTo";
     }
     
 }

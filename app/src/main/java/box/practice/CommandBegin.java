@@ -10,4 +10,8 @@ public class CommandBegin implements Command<DBStatus> {
     public DBStatus undo(Database db) {
         return DBStatus.DB_GOOD;
     }
+
+    public String getName() {
+        return "BEGIN";
+    }
 }

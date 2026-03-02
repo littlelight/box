@@ -3,12 +3,115 @@
  */
 package box.practice;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Scanner;
+import java.util.Stack;
+
+import box.practice.Database.DBStatus;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+
+    public static Database db = new Database();
+    public static Stack<Transaction> trakStack = new Stack<>();
+    public static void main(String[] args) {
+        System.out.println("Start");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        while(true) {
+            try {
+                String cmd = reader.readLine();
+                cmdInterpreter(cmd);
+            } catch (Exception e) {
+                return;
+            }
+            
+        }
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    public static void cmdInterpreter(String cmdStr) {
+        String key = "";
+        String value = "";
+        String[] cmds = cmdStr.split(" ");
+        String cmd = cmds[0];
+        switch(cmd) {
+            case "SET":
+                key = cmds[1];
+                value = cmds[2];
+                cmdExecutor(new CommandSet(key, value), cmd);
+                return;
+            case "UNSET":
+                key = cmds[1];
+                cmdExecutor(new CommandUnset(key), cmd);
+                return;
+            case "GET":
+                key = cmds[1];
+                cmdExecutor(new CommandGet(key), cmd);
+                return;
+            case "NUMEQUALTO":
+                value = cmds[1];
+                cmdExecutor(new CommandNumEqualTo(value), cmd);
+                return;
+            case "BEGIN":
+                cmdExecutor(new CommandBegin(), cmd);
+                return;
+            case "ROLLBACK":
+                cmdExecutor(new CommandRollback(), cmd);
+                return;
+            case "COMMIT":
+                cmdExecutor(new CommandCommit(), cmd);
+                return;
+            case "END":
+                cmdExecutor(new CommandEnd(), cmd);
+                return;
+            default:
+                return;
+        }
+    }
+
+    public static void cmdExecutor(Command<DBStatus> cmd, String cmdStr) {
+        switch(cmdStr) {
+            case "SET":
+            case "UNSET":
+                cmd.executor(db);
+                if(!trakStack.isEmpty()) {
+                    Transaction tran = trakStack.pop();
+                    tran.record(cmd);
+                    trakStack.push(tran);
+                }
+                return;
+            case "GET":
+            case "NUMEQUALTO":
+                cmd.executor(db);
+                return;
+            case "BEGIN":
+                cmd.executor(db);
+                Transaction tran = new Transaction(db);
+                trakStack.push(tran);
+                return;
+            case "ROLLBACK":
+                cmd.executor(db);
+                if(trakStack.isEmpty()) {
+                    System.out.println("No such transaction");
+                } else {
+                    Transaction rollbackTran = trakStack.pop();
+                    rollbackTran.rollback();;
+                }
+                return;
+            case "COMMIT":
+                cmd.executor(db);
+                if(trakStack.isEmpty()) {
+                    System.out.println("No such transaction");
+                }
+                while(!trakStack.isEmpty()) {
+                    trakStack.pop();
+                }
+                return;
+            case "END":
+                cmd.executor(db);
+                return;
+            default:
+                return;
+        }
     }
 }

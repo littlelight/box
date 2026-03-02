@@ -18,9 +18,7 @@ public class Database {
         valueToCount = new HashMap<>();
     }
     public DBStatus dbSet(String key, String value) {
-        if(decOldValue(key) == DBStatus.DB_NOT_FOUND) {
-            return DBStatus.DB_NOT_FOUND;
-        }
+        decOldValue(key);
 
         keyToValue.put(key, value);
         int count = valueToCount.getOrDefault(value, 0)+1;
@@ -29,42 +27,36 @@ public class Database {
     }
 
     public DBStatus dbUnset(String key) {
-        if(decOldValue(key) == DBStatus.DB_NOT_FOUND) {
-            return DBStatus.DB_NOT_FOUND;
-        }
-
+        decOldValue(key);
         keyToValue.remove(key);
         return DBStatus.DB_GOOD;
     }
 
     public String dbGet(String key) {
-        if(!keyToValue.containsKey(key)) {
-            throw new RuntimeException("key doesn't exists");
-        } 
-
-        return keyToValue.get(key);
+        return keyToValue.getOrDefault(key, "");
     }
 
     public int dbNumEqualTo(String value) {
         if(!valueToCount.containsKey(value)) {
-            throw new RuntimeException("value doesn't exists");
+            return 0;
         }
 
         return valueToCount.get(value);
     }
 
-    private DBStatus decOldValue(String key) {
+    private void decOldValue(String key) {
         if(!keyToValue.containsKey(key)) {
-            return DBStatus.DB_NOT_FOUND;
+            return;
         }
 
         String val = keyToValue.get(key);
         int count = valueToCount.get(val);
         count--;
+        valueToCount.put(val, count);
         if(count == 0) {
             valueToCount.remove(val);
         }
-        return DBStatus.DB_GOOD;
+        return;
     }
 
 }
