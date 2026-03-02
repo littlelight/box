@@ -22,7 +22,7 @@ public class CommandSet implements Command<DBStatus> {
     
     @Override
     public DBStatus undo() {
-        if((this.oldValue.equals("")) {
+        if(this.oldValue.equals("")) {
             return db.dbUnset(key);
         } else {
             return db.dbSet(key, oldValue);
